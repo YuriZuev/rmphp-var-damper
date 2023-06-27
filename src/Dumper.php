@@ -131,11 +131,11 @@ class Dumper {
 	public static function addShutdownInfo(array $exData = []) : void {
 		register_shutdown_function(function() use ($exData) {
 			$finish = array_sum(explode(' ', microtime()));
-			$info[] = error_get_last();
 			$info[] = "Время генерации: ".substr((string)($finish-$_SERVER['REQUEST_TIME_FLOAT']), 0, 10)." сек.";
 			$info[] = "Объем памяти: ".round((memory_get_usage()),2)." байт.";
 			$info[] = "Выделено памяти в пике: ".round((memory_get_peak_usage()),2)." байт.";
-			$exData['info'] = array_diff($info, array(null));
+			$exData['info'] = $info;
+			if(error_get_last()) $exData['errors'] = error_get_last();
 			self::dump($exData, "Dump info");
 		});
 	}
