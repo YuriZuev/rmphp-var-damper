@@ -20,7 +20,7 @@ if (!function_exists('vdd')) {
 	 * @param mixed $value
 	 * @return void
 	 */
-	function vdd(mixed $value): void {
+	function vdd(mixed ...$value): void {
 		Dumper::vdd($value);
 	}
 }
@@ -30,7 +30,7 @@ if (!function_exists('vd')) {
 	 * @param mixed $value
 	 * @return void
 	 */
-	function vd(mixed $value): void {
+	function vd(mixed ...$value): void {
 		Dumper::dump($value);
 	}
 }

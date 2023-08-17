@@ -12,6 +12,7 @@ class Dumper {
 	private static string $objhex;
 	private static int $objid = 0;
 	private static int $deep = 0;
+	private static string $blockTitle = "array";
 
     private static function initObjhex() : void {
         self::$objid++;
@@ -56,7 +57,7 @@ class Dumper {
 
 	private static function generateStartLine(): void {
 		?>
-		<div style="position:relative; box-sizing: border-box; width:100%; padding:10px; background: #000000; z-index: 10000; overflow: auto;">
+		<div style="position:relative; box-sizing: border-box; width:100%; padding:10px; background: #000000; z-index: 10000; overflow: auto; margin-bottom: 10px;">
 		<?php
 	}
 
@@ -115,17 +116,19 @@ class Dumper {
         }
 	}
 
-	public static function dump(mixed $value, string $name = ""): void {
-		if(in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)){
-			var_dump($value);
-		} else {
-			self::initObjhex();
-			self::generateCSSBlock();
-			self::generateStartLine();
-			self::generateHTMLBlock($value, $name ?? null);
-			self::generateEndLine();
-			self::generateJSBlock();
-		}
+	public static function dump(array $value): void {
+        foreach ($value as $val){
+			if(in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)){
+				var_dump($val);
+			} else {
+				self::initObjhex();
+				self::generateCSSBlock();
+				self::generateStartLine();
+				self::generateHTMLBlock($val, self::$blockTitle);
+				self::generateEndLine();
+				self::generateJSBlock();
+			}
+        }
 	}
 
 	public static function addShutdownInfo(array $exData = []) : void {
@@ -136,13 +139,14 @@ class Dumper {
 			$info[] = "Выделено памяти в пике: ".round((memory_get_peak_usage()),2)." байт.";
 			$exData['info'] = $info;
 			if(error_get_last()) $exData['errors'] = error_get_last();
-			self::dump($exData, "Dump info");
+            self::$blockTitle = "Dump info";
+			self::dump([$exData]);
 		});
 	}
 
-	public static function vdd(mixed $exData) : void {
-		register_shutdown_function(function() use ($exData) {
-            self::dump($exData);
+	public static function vdd(array $value) : void {
+		register_shutdown_function(function() use ($value) {
+            self::dump($value);
 		});
 		exit;
 	}
