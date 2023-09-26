@@ -22,6 +22,7 @@ if (!function_exists('vdd')) {
 	 */
 	function vdd(mixed ...$value): void {
 		Dumper::vdd($value);
+		exit;
 	}
 }
 
